@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
 
 @RestController
 @RequestMapping(value = "/user-service", produces = "application/json")
@@ -20,7 +19,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/api/v1/register")
-    public ResponseEntity<User> registerUser(@Valid @RequestBody User user) throws HttpClientErrorException {
+    public ResponseEntity<User> registerUser(@Valid @RequestBody User user) {
         return new ResponseEntity<>(userService.registerUser(user), HttpStatus.CREATED);
     }
 

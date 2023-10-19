@@ -38,7 +38,7 @@ public class User {
     @NotBlank(message = "Password is required")
     @Size(min = 6, max = 30, message = "Password must be between 6 and 30 characters")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,30}$",
-            message = "Invalid password format")
+            message = "Must contain one uppercase, lowercase, special character and a digit")
     private String password;
 
     private String profilePicUrl;
