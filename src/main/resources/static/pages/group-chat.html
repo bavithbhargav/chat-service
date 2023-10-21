@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Chat Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<div>
+    <input type="text" id="messageInput" placeholder="Type a message..." />
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<ul id="chatMessages"></ul>
+
+<script>
+    var socket = new SockJS('http://localhost:8080/websocket'); // Replace with the actual WebSocket endpoint
+    var stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+        stompClient.subscribe('/chatroom/public', function (message) {
+            displayMessage(JSON.parse(message.body));
+        });
+    });
+
+    function sendMessage() {
+        var messageContent = document.getElementById('messageInput').value;
+        var message = {
+            content: messageContent,
+            messageType: 'CHATROOM',
+            senderInfo: {
+                senderId: '1234',
+                senderName: 'Bavith'
+            },
+            receiverInfo: {
+                receiverId: '2345',
+                receiverName: 'Bhargav'
+            }
+        };
+        stompClient.send('/chat-service/chatroom/message', {}, JSON.stringify(message));
+    }
+
+    function displayMessage(message) {
+        var chatMessages = document.getElementById('chatMessages');
+        var li = document.createElement('li');
+        var senderName = message.senderInfo.senderName;
+        var messageContent = message.content;
+        li.appendChild(document.createTextNode(senderName + ': ' + messageContent));
+        chatMessages.appendChild(li);
+    }
+</script>
+</body>
+</html>
