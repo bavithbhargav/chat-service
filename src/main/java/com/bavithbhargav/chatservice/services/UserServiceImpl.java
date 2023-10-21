@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "User with email already exists");
         }
         String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
-        user.setUserId(MongoDBUtils.generateUserPrimaryID(10));
+        user.setUserId(MongoDBUtils.generateRandomPrimaryID(10));
         user.setPassword(encodedPassword);
         user.setCreatedDate(new Date());
         user.setUpdatedDate(new Date());
