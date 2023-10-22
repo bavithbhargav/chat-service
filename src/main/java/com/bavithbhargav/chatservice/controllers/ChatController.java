@@ -1,59 +1,37 @@
 package com.bavithbhargav.chatservice.controllers;
 
 import com.bavithbhargav.chatservice.collections.Message;
-import com.bavithbhargav.chatservice.repositories.MessageRepository;
-import com.bavithbhargav.chatservice.utils.MongoDBUtils;
+import com.bavithbhargav.chatservice.services.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-
-import java.util.Date;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class ChatController {
 
     @Autowired
-    private MessageRepository messageRepository;
-
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    private ChatService chatService;
 
     @MessageMapping("/chatroom/message")
-    @SendTo("/chatroom/public")
     public Message receiveChatRoomMessage(@Payload Message message) {
-        message.setMessageId(MongoDBUtils.generateRandomPrimaryID(10));
-        message.setCreatedDate(new Date());
-        messageRepository.save(message);
-        return message;
+        return chatService.processChatRoomMessage(message);
     }
 
     @MessageMapping("/private/message")
     public Message receivePersonalMessage(@Payload Message message) {
-        message.setMessageId(MongoDBUtils.generateRandomPrimaryID(10));
-        message.setCreatedDate(new Date());
-        messageRepository.save(message);
-        publishToSenderAndReceiverTopics(message);
-        return message;
+        return chatService.processPrivateMessage(message);
     }
 
     @MessageMapping("/group/message")
     public Message receiveGroupMessage(@Payload Message message) {
-        message.setMessageId(MongoDBUtils.generateRandomPrimaryID(10));
-        message.setCreatedDate(new Date());
-        messageRepository.save(message);
-        String groupTopic = "/group/" + message.getReceiverInfo().getReceiverId() + "/private";
-        messagingTemplate.convertAndSend(groupTopic, message);
-        return message;
+        return chatService.processGroupMessage(message);
     }
 
-    private void publishToSenderAndReceiverTopics(Message message) {
-        String receiverTopic = "/user/" + message.getReceiverInfo().getReceiverId() + "/private";
-        String senderTopic = "/user/" + message.getSenderInfo().getSenderId() + "/private";
-        messagingTemplate.convertAndSend(receiverTopic, message);
-        messagingTemplate.convertAndSend(senderTopic, message);
+    @GetMapping("/group-chat")
+    public String serveHTML() {
+        return "pages/group-chat.html";
     }
 
 }

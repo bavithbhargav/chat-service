@@ -2,3 +2,5 @@ spring:
   data:
     mongodb:
       uri: ${DB_CONNECTION_STRING}
+  config:
+    import: secrets.yml

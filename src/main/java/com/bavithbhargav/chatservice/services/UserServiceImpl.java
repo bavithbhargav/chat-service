@@ -4,6 +4,8 @@ import com.bavithbhargav.chatservice.collections.User;
 import com.bavithbhargav.chatservice.repositories.UserRepository;
 import com.bavithbhargav.chatservice.utils.MongoDBUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<User> getAllUsers(Pageable pageable) {
+        Page<User> usersPage = userRepository.findAll(pageable);
+        return usersPage.map(user -> {
+            user.setPassword(null);
+            return user;
+        });
+    }
+
+    @Override
     public User loginUser(User user) {
         if (user.getEmail() == null || user.getPassword() == null ||
                 user.getEmail().isEmpty() || user.getPassword().isEmpty()) {
@@ -46,19 +57,8 @@ public class UserServiceImpl implements UserService {
         if (!bCryptPasswordEncoder.matches(user.getPassword(), userFromDB.getPassword())) {
             throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Incorrect password");
         }
-        return constructUserDTO(userFromDB);
-    }
-
-    private User constructUserDTO(User userFromDB) {
-        // Construct the User object without the password attribute
-        return User.builder()
-                .userId(userFromDB.getUserId())
-                .name(userFromDB.getName())
-                .email(userFromDB.getEmail())
-                .profilePicUrl(userFromDB.getProfilePicUrl())
-                .createdDate(userFromDB.getCreatedDate())
-                .updatedDate(userFromDB.getUpdatedDate())
-                .build();
+        userFromDB.setPassword(null);
+        return userFromDB;
     }
 
 }
