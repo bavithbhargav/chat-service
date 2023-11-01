@@ -1,6 +1,8 @@
 package com.bavithbhargav.chatservice.collections;
 
 import com.bavithbhargav.chatservice.constants.ChatServiceConstants.MessageType;
+import com.bavithbhargav.chatservice.models.ChatRoomInfo;
+import com.bavithbhargav.chatservice.models.GroupInfo;
 import com.bavithbhargav.chatservice.models.ReceiverInfo;
 import com.bavithbhargav.chatservice.models.SenderInfo;
 import jakarta.validation.Valid;
@@ -34,6 +36,12 @@ public class Message {
 
     @Valid
     private ReceiverInfo receiverInfo;
+
+    @Valid
+    private ChatRoomInfo chatRoomInfo;
+
+    @Valid
+    private GroupInfo groupInfo;
 
     private Date createdDate;
 
