@@ -2,7 +2,7 @@ package com.bavithbhargav.chatservice.services;
 
 import com.bavithbhargav.chatservice.collections.Message;
 
-public interface ChatService {
+public interface WebSocketService {
 
     Message processChatRoomMessage(Message message);
 

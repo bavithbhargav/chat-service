@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 @Service
-public class ChatServiceImpl implements ChatService {
+public class WebSocketServiceImpl implements WebSocketService {
 
     @Autowired
     private MessageRepository messageRepository;
