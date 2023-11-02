@@ -4,6 +4,7 @@ import com.bavithbhargav.chatservice.models.CreatorInfo;
 import com.bavithbhargav.chatservice.models.MemberInfo;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +32,7 @@ public class Group {
     @Size(min = 2, message = "group must have at least 2 members")
     private List<MemberInfo> members;
 
+    @NotNull
     @Valid
     private CreatorInfo creatorInfo;
 
