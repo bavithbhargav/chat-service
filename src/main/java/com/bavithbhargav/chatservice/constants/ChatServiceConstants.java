@@ -8,4 +8,10 @@ public class ChatServiceConstants {
         PRIVATE
     }
 
+    public enum GroupRequestType {
+        ADD_USERS,
+        REMOVE_USERS,
+        UPDATE_GROUP_NAME
+    }
+
 }
