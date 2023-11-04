@@ -9,4 +9,6 @@ public interface ChatService {
 
     Group updateGroup(GroupUpdateType requestType, Group group);
 
+    void deleteGroup(Group group);
+
 }

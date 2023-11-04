@@ -26,4 +26,10 @@ public class ChatController {
         return new ResponseEntity<>(chatService.updateGroup(requestType, group), HttpStatus.OK);
     }
 
+    @DeleteMapping("api/v1/groups")
+    public ResponseEntity<Group> deleteGroup(@RequestBody Group group) {
+        chatService.deleteGroup(group);
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+    }
+
 }

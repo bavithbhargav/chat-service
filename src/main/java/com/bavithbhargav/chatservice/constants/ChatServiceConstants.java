@@ -10,7 +10,8 @@ public class ChatServiceConstants {
 
     public enum GroupEventType {
         CREATE_GROUP,
-        UPDATE_GROUP
+        UPDATE_GROUP,
+        DELETE_GROUP
     }
 
     public enum GroupUpdateType {

@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import static com.bavithbhargav.chatservice.constants.ChatServiceConstants.GroupEventType.CREATE_GROUP;
-import static com.bavithbhargav.chatservice.constants.ChatServiceConstants.GroupEventType.UPDATE_GROUP;
+import static com.bavithbhargav.chatservice.constants.ChatServiceConstants.GroupEventType.*;
 
 @Component
 public class GroupEventPublisher {
@@ -23,6 +22,11 @@ public class GroupEventPublisher {
 
     public void publishGroupUpdationEvent(final Group group, final GroupUpdateType groupUpdateType) {
         GroupEvent groupEvent = new GroupEvent(this, group, UPDATE_GROUP, groupUpdateType);
+        applicationEventPublisher.publishEvent(groupEvent);
+    }
+
+    public void publishGroupDeletionEvent(final Group group) {
+        GroupEvent groupEvent = new GroupEvent(this, group, DELETE_GROUP, null);
         applicationEventPublisher.publishEvent(groupEvent);
     }
 

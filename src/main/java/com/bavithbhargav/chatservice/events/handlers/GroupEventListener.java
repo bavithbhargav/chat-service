@@ -26,11 +26,22 @@ public class GroupEventListener {
     @Async
     public void handleGroupEvent(GroupEvent groupEvent) {
         Group group = groupEvent.getGroup();
-        if (groupEvent.getGroupEventType() == CREATE_GROUP) {
-            handleCreateGroupEvent(group);
-        } else {
-            handleUpdateGroupEvent(group, groupEvent.getGroupUpdateType());
+        switch (groupEvent.getGroupEventType()) {
+            case CREATE_GROUP -> handleCreateGroupEvent(group);
+            case UPDATE_GROUP -> handleUpdateGroupEvent(group, groupEvent.getGroupUpdateType());
+            case DELETE_GROUP -> handleDeleteGroupEvent(group);
         }
+    }
+
+    private void handleDeleteGroupEvent(Group group) {
+        List<String> userIds = group.getMembers().stream()
+                .map(MemberInfo::getUserId)
+                .toList();
+        List<User> usersFromDB = userRepository.findAllById(userIds);
+        for (User user : usersFromDB) {
+            user.getUserGroups().remove(new GroupInfo(group.getGroupId(), group.getGroupName()));
+        }
+        userRepository.saveAll(usersFromDB);
     }
 
     private void handleUpdateGroupEvent(Group group, GroupUpdateType groupUpdateType) {

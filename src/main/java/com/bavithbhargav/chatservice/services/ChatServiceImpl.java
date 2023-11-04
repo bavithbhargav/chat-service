@@ -83,5 +83,10 @@ public class ChatServiceImpl implements ChatService {
         return savedGroup;
     }
 
+    @Override
+    public void deleteGroup(Group group) {
+        groupRepository.deleteById(group.getGroupId());
+        groupEventPublisher.publishGroupDeletionEvent(group);
+    }
 
 }
