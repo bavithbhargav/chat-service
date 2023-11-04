@@ -1,7 +1,7 @@
 package com.bavithbhargav.chatservice.controllers;
 
 import com.bavithbhargav.chatservice.collections.Group;
-import com.bavithbhargav.chatservice.constants.ChatServiceConstants.GroupRequestType;
+import com.bavithbhargav.chatservice.constants.ChatServiceConstants.GroupUpdateType;
 import com.bavithbhargav.chatservice.services.ChatService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class ChatController {
     }
 
     @PatchMapping("api/v1/groups")
-    public ResponseEntity<Group> updateGroup(@RequestBody Group group, @RequestParam GroupRequestType requestType) {
+    public ResponseEntity<Group> updateGroup(@RequestBody Group group, @RequestParam GroupUpdateType requestType) {
         return new ResponseEntity<>(chatService.updateGroup(requestType, group), HttpStatus.OK);
     }
 

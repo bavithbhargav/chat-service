@@ -1,8 +1,8 @@
 package com.bavithbhargav.chatservice.services;
 
 import com.bavithbhargav.chatservice.collections.Group;
-import com.bavithbhargav.chatservice.constants.ChatServiceConstants.GroupRequestType;
-import com.bavithbhargav.chatservice.events.publishers.GroupCreationEventPublisher;
+import com.bavithbhargav.chatservice.constants.ChatServiceConstants.GroupUpdateType;
+import com.bavithbhargav.chatservice.events.publishers.GroupEventPublisher;
 import com.bavithbhargav.chatservice.models.MemberInfo;
 import com.bavithbhargav.chatservice.repositories.GroupRepository;
 import com.bavithbhargav.chatservice.utils.MongoDBUtils;
@@ -24,7 +24,7 @@ public class ChatServiceImpl implements ChatService {
     private GroupRepository groupRepository;
 
     @Autowired
-    private GroupCreationEventPublisher groupCreationEventPublisher;
+    private GroupEventPublisher groupEventPublisher;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -39,14 +39,14 @@ public class ChatServiceImpl implements ChatService {
         group.getMembers().forEach(memberInfo -> memberInfo.setJoiningDate(new Date()));
         group.setCreationDate(new Date());
         Group savedGroup = groupRepository.save(group);
-        groupCreationEventPublisher.publishGroupCreationEvent(group);
+        groupEventPublisher.publishGroupCreationEvent(savedGroup);
         return savedGroup;
     }
 
     @Override
-    public Group updateGroup(GroupRequestType requestType, Group group) {
+    public Group updateGroup(GroupUpdateType requestType, Group groupFromUser) {
         Group groupFromDB = mongoTemplate.findOne(
-                Query.query(Criteria.where("groupId").is(group.getGroupId())),
+                Query.query(Criteria.where("groupId").is(groupFromUser.getGroupId())),
                 Group.class
         );
         if (groupFromDB == null) {
@@ -54,30 +54,33 @@ public class ChatServiceImpl implements ChatService {
         }
         switch (requestType) {
             case ADD_USERS -> {
-                List<MemberInfo> usersToBeAdded = group.getMembers()
+                List<MemberInfo> usersToBeAdded = groupFromUser.getMembers()
                         .stream()
                         .filter(memberInfo -> memberInfo.getUserId() != null && memberInfo.getUserName() != null)
                         .filter(memberInfo -> !groupFromDB.getMembers().contains(memberInfo))
                         .toList();
                 groupFromDB.getMembers().addAll(usersToBeAdded);
+                groupFromUser.setMembers(usersToBeAdded);
             }
             case REMOVE_USERS -> {
-                List<MemberInfo> usersToBeRemoved = group.getMembers()
+                List<MemberInfo> usersToBeRemoved = groupFromUser.getMembers()
                         .stream()
                         .filter(memberInfo -> memberInfo.getUserId() != null && memberInfo.getUserName() != null)
                         .toList();
                 groupFromDB.getMembers().removeAll(usersToBeRemoved);
+                groupFromUser.setMembers(usersToBeRemoved);
             }
             case UPDATE_GROUP_NAME -> {
-                boolean groupNameAlreadyExists = groupRepository.findByGroupName(group.getGroupName()) != null;
+                boolean groupNameAlreadyExists = groupRepository.findByGroupName(groupFromUser.getGroupName()) != null;
                 if (groupNameAlreadyExists) {
                     throw new HttpClientErrorException(HttpStatus.CONFLICT, "Requested name already exists");
                 }
-                groupFromDB.setGroupName(group.getGroupName());
+                groupFromDB.setGroupName(groupFromUser.getGroupName());
             }
         }
-        groupRepository.save(groupFromDB);
-        return null;
+        Group savedGroup = groupRepository.save(groupFromDB);
+        groupEventPublisher.publishGroupUpdationEvent(groupFromUser, requestType);
+        return savedGroup;
     }
 
 

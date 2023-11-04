@@ -1,6 +1,6 @@
 package com.bavithbhargav.chatservice.collections;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.bavithbhargav.chatservice.models.GroupInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,6 +14,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
@@ -40,6 +41,8 @@ public class User {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,30}$",
             message = "Must contain one uppercase, lowercase, special character and a digit")
     private String password;
+
+    private List<GroupInfo> userGroups;
 
     private String profilePicUrl;
 
